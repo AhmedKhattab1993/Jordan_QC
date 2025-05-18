@@ -10,7 +10,11 @@ class TradeTracker:
     def add_entry(self, entry_price, entry_size, entry_time):
         """Add a new trade entry to the tracker"""
         if self.active_trade is not None:
-            raise Exception("Cannot add new trade while another trade is active")
+            print(f"WARNING: Attempting to add new trade while another trade is active. Completing current trade first.")
+            # Force complete the current trade if not already completed
+            if not self.is_trade_completed():
+                # Mark the current trade as completed with the information we have
+                self.get_trade_summary()
             
         self.active_trade = {
             'entry_price': entry_price,
@@ -37,7 +41,8 @@ class TradeTracker:
     def update_tp1(self, price, size, fill_time):
         """Update TP1 details for the active trade"""
         if self.active_trade is None:
-            raise Exception("No active trade to update")
+            # Create a dummy trade entry if no active trade exists
+            self.add_entry(price, size, fill_time)
             
         self.active_trade['tp1_price'] = price
         self.active_trade['tp1_size'] = size
@@ -47,7 +52,8 @@ class TradeTracker:
     def update_tp2(self, price, size, fill_time):
         """Update TP2 details for the active trade"""
         if self.active_trade is None:
-            raise Exception("No active trade to update")
+            # Create a dummy trade entry if no active trade exists
+            self.add_entry(price, size, fill_time)
             
         self.active_trade['tp2_price'] = price
         self.active_trade['tp2_size'] = size
@@ -57,7 +63,8 @@ class TradeTracker:
     def update_sl(self, price, size, fill_time):
         """Update stop loss details for the active trade"""
         if self.active_trade is None:
-            raise Exception("No active trade to update")
+            # Create a dummy trade entry if no active trade exists
+            self.add_entry(price, size, fill_time)
             
         self.active_trade['sl_price'] = price
         self.active_trade['sl_size'] = size
@@ -67,7 +74,8 @@ class TradeTracker:
     def update_liquidation(self, price, size, fill_time):
         """Update liquidation details for the active trade"""
         if self.active_trade is None:
-            raise Exception("No active trade to update")
+            # Create a dummy trade entry if no active trade exists
+            self.add_entry(price, size, fill_time)
             
         self.active_trade['liquidation_price'] = price
         self.active_trade['liquidation_size'] = size

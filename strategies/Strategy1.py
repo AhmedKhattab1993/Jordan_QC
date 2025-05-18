@@ -110,7 +110,7 @@ class Strategy1:
 
         day_of_week, day_count = self.GetDayOccurrenceInMonth()
 
-        if start_time <= current_time <= end_time and day_of_week in [0, 3, 4]:
+        if True:
             self.PlaceTradeIfCriteriaMet()
         else:
             if self.pending_order is not None:
@@ -128,11 +128,16 @@ class Strategy1:
             return
         latest_market_structure = self.market_structure_algo_low.GetLatestMarketStructure()
         last_poi_support, last_poi_resistance = self.poi_algo.GetNearestPOIs()
+        current_price = self.algorithm.Securities[self.symbol].Price
         
-        if last_poi_support is not None and last_poi_support['pivot'] and latest_market_structure == "uptrend":
+        # Calculate proximity to current price for support and resistance POIs
+        support_proximity = float('inf') if last_poi_support is None else abs(current_price - last_poi_support['price'])
+        resistance_proximity = float('inf') if last_poi_resistance is None else abs(current_price - last_poi_resistance['price'])
+        
+        if last_poi_support is not None and last_poi_support['pivot'] and current_price > last_poi_support['price'] and support_proximity <= resistance_proximity:
             self.SetAccountPCT('long')
             self.PlaceLongTrade(last_poi_support, last_poi_resistance)
-        elif last_poi_resistance is not None and last_poi_resistance['pivot'] and latest_market_structure == "downtrend":
+        elif last_poi_resistance is not None and last_poi_resistance['pivot'] and current_price < last_poi_resistance['price'] and resistance_proximity <= support_proximity:
             self.SetAccountPCT('short')
             self.PlaceShortTrade(last_poi_support, last_poi_resistance)
 
